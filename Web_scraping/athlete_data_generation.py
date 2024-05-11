@@ -1,7 +1,7 @@
 from athlete_scraping import get_table
 import pandas as pd
 
-events = ["road-running","10000m","5000m","1500m"]
+events = ["marathon","road-running","10000m","5000m","1500m"]
 
 women_table = get_table("women",events,5)
 women_df = pd.DataFrame(women_table,columns = ["Name", "Date of Birth", "Nationality", "Link"])
