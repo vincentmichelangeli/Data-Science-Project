@@ -29,5 +29,7 @@ def get_table(gender, events, n_pages):
                 single_data = [td.text for td in tds[1:4]]
                 single_data.append(athlete_url)
                 # Find the URL (assuming it's contained in an <a> tag within the first <td>)
-                data.append(single_data)
-    return set(data)
+                data.append(tuple(single_data))
+    data = list(set(data))
+    data = [list(x) for x in data]
+    return data
