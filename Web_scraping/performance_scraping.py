@@ -11,7 +11,7 @@ def get_times(gender):
     path = f'Data/Scraped_data/{gender}_Athletes.csv'
     data = []
     df = pd.read_csv(path)
-    for _,i in df.iterrows():
+    for _,i in df.head(10).iterrows():
         url = i['Link']
         name = i['Name']
         try:
@@ -32,6 +32,7 @@ def get_times(gender):
         except Exception:
             print("Error occured, skipping to next iteration")
             continue
+    data = pd.DataFrame(data, columns= ['Name' , 'Races'])
     data.to_csv('Data/Scraped_data/Men_competitions.csv', index=False)
 
 
