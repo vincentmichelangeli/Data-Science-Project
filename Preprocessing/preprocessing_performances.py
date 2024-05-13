@@ -1,4 +1,3 @@
-import pandas as pd
 import ast
 import re
 from datetime import timedelta
