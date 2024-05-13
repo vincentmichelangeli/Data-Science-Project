@@ -33,7 +33,7 @@ def get_times(gender):
             print("Error occured, skipping to next iteration")
             continue
     data = pd.DataFrame(data, columns= ['Name' , 'Races'])
-    data.to_csv(f'Data/Scraped_data/{gender}_performances.csv', index=False)
+    data.to_csv(f'Data/Scraped_tables/{gender}_performances.csv', index=False)
 
 
 if __name__ == "__main__":
