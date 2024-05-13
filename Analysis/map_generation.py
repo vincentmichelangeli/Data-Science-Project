@@ -6,8 +6,8 @@ import os
 
 
 # Load your data into a pandas DataFrame
-men = pd.read_csv('Data/Preprocessed_data/Men_athletes.csv')
-women = pd.read_csv('Data/Preprocessed_data/Women_athletes.csv')
+men = pd.read_csv('Data/Preprocessed_tables/Men_athletes.csv')
+women = pd.read_csv('Data/Preprocessed_tables/Women_athletes.csv')
 replacements = {'GER' : 'DEU', 
                 'POR' : 'PRT', 
                 'SUI' : 'CHE', 
@@ -77,6 +77,6 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Save the figure
 output_path = os.path.join(output_dir, 'Athletes_countries.png')
-plt.savefig(output_path, bbox_inches='tight')
+plt.savefig(output_path, bbox_inches='tight', dpi=300)
 
 plt.show()
