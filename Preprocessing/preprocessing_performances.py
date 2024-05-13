@@ -1,5 +1,6 @@
 import ast
 import re
+import pandas as pd
 from datetime import timedelta
 
 # Function to convert a time string to a timedelta object
