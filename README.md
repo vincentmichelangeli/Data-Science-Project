@@ -7,7 +7,8 @@
 - [License](#license)
 
 ## Project Description
-This project aims to give an overview of the performances of the best runners in the world over the past few years, using data scraped on the World Athletics website ([www.](https://worldathletics.org/))
+This project aims to give an overview of the performances of the best runners in the world over the past few years, using data scraped on [World Athletics](https://worldathletics.org/) 
+It will try to characterise and quantify athlete's progression and the evolution of theri profile throughout their carreer
 
 ## Features
 - You will have access to a first folder containing all the code necessary to the scraping of the different databases in the Web_scraping folder
