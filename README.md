@@ -19,5 +19,7 @@ It will try to characterise and quantify athlete's progression and the evolution
 ## Installation
 
 To install all the dependencies needed to run this code run:
-  pip install -r requirements.txt
+    ```bash
+    pip install -r requirements.txt
+    ```
 
