@@ -35,24 +35,12 @@ def process_races(row):
             for performance in race[2:]:
                 parts = performance.split()
                 year = parts[0]
-                time_delta = extract_time(parts)
+                time_delta = parse_time_to_timedelta(parts[1])
                 if time_delta:  # Ensure there is a valid time delta before appending
                     records.append([row['Name'], race_name, year, time_delta])
     return records
 
 # Example DataFrame (adjust to your actual data loading)
-data = {
-    'Name': ['John Doe', 'Jane Smith'],
-    'Races': [
-        "[['1500 Metres', 'Year Performance Venue Date', '2021 3:54.7 Moi International Sports Centre, Kasarani, Nairobi (KEN) 12 MAR 2021']]",
-        "[['10 Kilometres Road', 'Year Performance Venue Date', '2022 27:35 Brasov (ROU) 25 SEP 2022', '2024 27:01 Valencia (ESP) 14 JAN 2024']]"
-    ]
-}
 
-df = pd.DataFrame(data)
 
-new_records = []
-df.apply(lambda row: new_records.extend(process_races(row)), axis=1)
 
-result_df = pd.DataFrame(new_records, columns=['Name', 'Race', 'Year', 'Time'])
-print(result_df)
