@@ -1,4 +1,4 @@
-# Data Science Project : analysis of elite athletes' performances in World Athletics
+# Data Science Project : Analysis of elite runners performances in World Athletics
 
 ## Table of Contents
 - [Project Description](#project-description)
