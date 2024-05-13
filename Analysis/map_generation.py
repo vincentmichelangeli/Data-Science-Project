@@ -2,11 +2,12 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
+import os
 
 
 # Load your data into a pandas DataFrame
-df = pd.read_csv('Data/Preprocessed_data/Men_athletes.csv')
-
+men = pd.read_csv('Data/Preprocessed_data/Men_athletes.csv')
+women = pd.read_csv('Data/Preprocessed_data/Women_athletes.csv')
 replacements = {'GER' : 'DEU', 
                 'POR' : 'PRT', 
                 'SUI' : 'CHE', 
@@ -20,7 +21,9 @@ replacements = {'GER' : 'DEU',
                 'NED': 'NLD'}
 
 
+df = pd.concat([men, women], axis=0, ignore_index=True)
 df['Nationality'] = df['Nationality'].replace(replacements)
+
 
 # Count the number of occurrences of each country
 country_counts = df['Nationality'].value_counts().reset_index()
@@ -69,5 +72,11 @@ cbar.set_label('Number of Athletes by Country', fontsize=12)
 # Remove the axis for a cleaner look
 ax.axis('off')
 
+output_dir = 'Data/Figures'
+os.makedirs(output_dir, exist_ok=True)
+
+# Save the figure
+output_path = os.path.join(output_dir, 'Athletes_countries.png')
+plt.savefig(output_path, bbox_inches='tight')
+
 plt.show()
-plt.savefig()
