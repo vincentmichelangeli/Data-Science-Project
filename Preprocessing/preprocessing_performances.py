@@ -2,6 +2,7 @@ import ast
 import re
 import pandas as pd
 from datetime import timedelta
+import pandas as pd
 
 # Function to convert a time string to a timedelta object
 def parse_time_to_timedelta(time_str):
@@ -38,9 +39,16 @@ def process_races(row):
                 time_delta = parse_time_to_timedelta(parts[1])
                 if time_delta:  # Ensure there is a valid time delta before appending
                     records.append([row['Name'], race_name, year, time_delta])
+
     return records
 
-# Example DataFrame (adjust to your actual data loading)
 
-
+def full_data_process(Gender):
+    records = []
+    df_perf = pd.read_csv(f'Data\Scraped_data\{Gender}_performances.csv')
+    df_perf.apply(lambda row: records.extend(process_races(row)), axis=1)
+    records = pd.DataFrame(records, columns=['Name', 'Race', 'Year', 'Time'])
+    pd.to_datetime(records['Year'])
+    records = records.pivot_table(index=['Name', 'Year'], columns='Race', values='Time', aggfunc='first')
+    records.to_csv(f'Data\Preprocessed_data\{Gender}_performances.csv')
 
