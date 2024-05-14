@@ -13,6 +13,9 @@ import os
 datetime_columns = ['1500 Metres', '10 Kilometres Road', '5000 Metres','Half Marathon', '10,000 Metres', 'Marathon']
 
 def time_to_seconds(t):
+    """ t :string element from a column where the races are stored
+    Output : float that represtent the matching number of seconds"""
+
     if pd.isnull(t):
         return np.nan
     t = t.split()[-1]
@@ -23,16 +26,22 @@ def time_to_seconds(t):
     return time
 
 def impute_missing_performances(Gender):
-    df = pd.read_csv(f'Data/Preprocessed_tables/{Gender}_performances.csv')
 
+
+    """ Gender : 'Men' | 'Women' : string represeting the table used
+    Ouput : df,df_imputed : both the df with imputed values and the original one"""
+
+
+    #Load the df
+    df = pd.read_csv(f'Data/Preprocessed_tables/{Gender}_performances.csv')
     df = df.drop(columns=['Year'])
-    # Drop the Name column for clustering
     names = df.pop('Name')
 
+    #Convert times
     for col in df.columns:
         df[col] = df[col].apply(time_to_seconds)
 
-    # Impute missing values using KNN
+    # Impute missing values
     imputer = KNNImputer(n_neighbors=3)
     df_imputed = imputer.fit_transform(df)
     df_imputed = pd.DataFrame(df_imputed, columns=df.columns)
@@ -42,12 +51,13 @@ def impute_missing_performances(Gender):
     return df_imputed,df
 
 def generate_best_performance(df,df_imputed):
-    df = df.groupby('Name').min()
 
+    """ Inputs are the ouputs of the previous function
+    Outputs : dataframe containing athletes pbs and the corresponding list of names"""
+
+    df = df.groupby('Name').min()
     best_performance = df_imputed.groupby('Name').min()
 
-
-    # Combine the DataFrames by keeping the maximum values for each column
     best_performance = best_performance.combine(df, np.fmax)
 
     # Reset the index to have 'Name' as a column again
@@ -57,12 +67,19 @@ def generate_best_performance(df,df_imputed):
     return best_performance,names
 
 def clustering_pca(best_performance,names):
+
+    """ Input are the outputs of the previous functions
+    Output : Dataframe with the best performances and the PCA of the athletes"""
+
+
     # Standardize the data
     scaler = StandardScaler()
     df_scaled = scaler.fit_transform(best_performance)
 
     silhouette = []
-    # Perform KMeans clustering
+
+    #KMeans clustering cross validation
+
     for i in range(2,7):
         kmeans = KMeans(n_clusters=i, random_state=42)
         clusters = kmeans.fit_predict(df_scaled)
@@ -72,20 +89,23 @@ def clustering_pca(best_performance,names):
     kmeans = KMeans(n_clusters=k, random_state=42)
     clusters = kmeans.fit_predict(best_performance)
 
+    # PCA
     pca = PCA(n_components=2)
     pca_result = pca.fit_transform(df_scaled)
 
-    # Add the PCA result back to the DataFrame
+    # Add the PCA
     best_performance['PCA1'] = pca_result[:, 0]
     best_performance['PCA2'] = pca_result[:, 1]
 
-    # Add the cluster labels back to the original DataFrame
+    # Add the cluster labels
     best_performance['Cluster'] = clusters
     best_performance['Name'] = names
     return best_performance
 
 
 def make_plot(best_performance,Gender):
+
+    """Makes the plot with the dataframe obtained before and the gender : string (Men or Women)"""
     plt.figure(figsize=(10, 7))
 
     # Define a color map for clusters
@@ -133,6 +153,7 @@ def make_plot(best_performance,Gender):
 
 
 def final_clustering(Gender):
+    """Gender : 'Men'| 'Women' function generates everything"""
     imputed_df,df = impute_missing_performances(Gender)
     best_performance, names = generate_best_performance(df,imputed_df)
     best_performance = clustering_pca(best_performance,names)

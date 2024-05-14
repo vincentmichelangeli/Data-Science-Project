@@ -8,6 +8,11 @@ driver = webdriver.Chrome()
 
 
 def get_times(gender):
+
+    """gender = string 
+    Returns the finished dataframe
+    Works as of the 14/05/2024, might be deprecated in the future"""
+
     path = f'Data/Scraped_data/{gender}_Athletes.csv'
     data = []
     df = pd.read_csv(path)
@@ -16,7 +21,8 @@ def get_times(gender):
         name = i['Name']
         try:
             driver.get(url)
-
+            ##finding the relevant button
+            
             times = driver.find_element(By.TAG_NAME, value='body')
             times = times.find_element(By.CLASS_NAME, value = 'profileStatistics_fullStats__2G6op')
             times = times.find_element(By.CLASS_NAME, value='profileStatistics_fullStatsInner__33eTg')
@@ -24,10 +30,15 @@ def get_times(gender):
             button = button.find_element(By.TAG_NAME, value='ul')
             button = button.find_elements(By.TAG_NAME, value= 'li')[4]
             button = button.find_element(By.TAG_NAME, value= 'div')
+
+            ## CLicking on the button
+
             driver.execute_script("arguments[0].scrollIntoView(true);", button)
             button.click()
             times = times.find_elements(By.CLASS_NAME, value='profileStatistics_statsTable__xU9PN')
             times = [time.text.split('\n') for time in times]
+            ### Adding the data the list in the rawest form possible
+
             data.append([name, times])
         except Exception:
             print("Error occured, skipping to next iteration")
@@ -36,6 +47,7 @@ def get_times(gender):
     data.to_csv(f'Data/Scraped_tables/{gender}_performances.csv', index=False)
 
 
+#tests
 if __name__ == "__main__":
     data = []
     url = 'https://worldathletics.org/athletes/ethiopia/sisay-lemma-14547527'
