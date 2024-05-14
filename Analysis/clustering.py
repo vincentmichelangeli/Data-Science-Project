@@ -106,28 +106,39 @@ def make_plot(best_performance,Gender):
         plt.text(label_data['PCA1'].values[0], label_data['PCA2'].values[0], point.split()[1], fontsize=10, ha='right', weight = 'bold')
 
     clusters_to_label = [1]
-    num_points_to_label = 5
+    num_points_to_label = 3
 
     for cluster in clusters_to_label:
         cluster_data = best_performance[best_performance['Cluster'] == cluster]
-        sampled_points = cluster_data.sample(n=num_points_to_label, random_state=42)
+        sampled_points = cluster_data.sample(n=num_points_to_label, random_state=10)
         for __, row in sampled_points.iterrows():
-            plt.scatter(row['PCA1'], row['PCA2'], c=colors[cluster % len(colors)], edgecolor='black', s=100, linewidth=1.5)  # Outline the point
+            plt.scatter(row['PCA1'], row['PCA2'], c=colors[cluster % len(colors)], edgecolor='black', s=100, linewidth=1.5) 
             plt.text(row['PCA1'], row['PCA2'], row['Name'].split()[-1], fontsize=10, ha='right', weight = 'bold')
 
 
-    plt.title('PCA of Clustered Data')
-    plt.title('PCA of Clustered Data')
-    plt.xlabel('PCA1')
-    plt.ylabel('PCA2')
+    plt.title('Visualisation of the clusters')
     plt.legend()
+    if Gender == 'Women':
+        plt.xlim(-6, 6)  
+        plt.ylim(-5, 5)
     plt.grid(True)
-    plt.show()
 
+    
     output_dir = 'Data/Figures'
     os.makedirs(output_dir, exist_ok=True)
 
     # Save the figure
     output_path = os.path.join(output_dir, f'{Gender}_Athletes_clustering.png')
     plt.savefig(output_path, bbox_inches='tight', dpi=300)
-    plt.savefig()
+
+    plt.show()
+
+
+
+def final_function(Gender):
+    imputed_df,df = impute_missing_performances(Gender)
+    best_performance, names = generate_best_performance(df,imputed_df)
+    best_performance = clustering_pca(best_performance,names)
+    make_plot(best_performance, Gender)
+
+final_function('Women')
