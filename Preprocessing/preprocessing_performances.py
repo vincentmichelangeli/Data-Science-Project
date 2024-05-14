@@ -45,10 +45,10 @@ def process_races(row):
 
 def full_data_process(Gender):
     records = []
-    df_perf = pd.read_csv(f'Data\Scraped_data\{Gender}_performances.csv')
+    df_perf = pd.read_csv(f'Data\Scraped_tables\{Gender}_performances.csv')
     df_perf.apply(lambda row: records.extend(process_races(row)), axis=1)
     records = pd.DataFrame(records, columns=['Name', 'Race', 'Year', 'Time'])
     pd.to_datetime(records['Year'])
     records = records.pivot_table(index=['Name', 'Year'], columns='Race', values='Time', aggfunc='first')
-    records.to_csv(f'Data\Preprocessed_data\{Gender}_performances.csv')
+    records.to_csv(f'Data\Preprocessed_tables\{Gender}_performances.csv')
 
