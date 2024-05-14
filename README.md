@@ -1,4 +1,4 @@
-# Data Science Project : Analysis of elite runners performances in World Athletics
+# Data Science Project : analysis of elite athletes' performances in World Athletics
 
 ## Table of Contents
 - [Project Description](#project-description)
@@ -18,8 +18,29 @@ It will try to characterise and quantify athlete's progression and the evolution
 
 ## Installation
 
-To install all the dependencies needed to run this code run:
+To install all the dependencies needed to run this code:
     ```bash
     pip install -r requirements.txt
-    ```
+   
+ ```
+
+To clone the repository, download : 
+git clone https://github.com/vincentmichelangeli/Data-Science-Project.git
+cd Data-Science-Project
+
+To run it you have a few parts : 
+
+Web scraping : This takes a few hours to run so be mindful (you have access to the database directly in the folders)
+python Web_scraping/athlete_scraping.py
+python Web_scraping/performance_scraping.py 
+
+Preprocessing : Once you have downloaded the previous database, one way or another, to get the clean ones :
+python Preprocessing/preprocessed_data_generation.py
+
+Analysis : To plot all the relevant data
+python Preprocessing/preprocessed_data_generation.py
+
+
+
+
 
