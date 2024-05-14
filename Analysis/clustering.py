@@ -15,7 +15,7 @@ datetime_columns = ['1500 Metres', '10 Kilometres Road', '5000 Metres','Half Mar
 def time_to_seconds(t):
     if pd.isnull(t):
         return np.nan
-    t = t.split()[2]
+    t = t.split()[-1]
     t = re.split('[:.]', t)
     time = float(t[0])*3600 + float(t[1]) * 60 + float(t[2])
     if len(t) == 4:
@@ -96,7 +96,7 @@ def make_plot(best_performance,Gender):
         plt.scatter(cluster_data['PCA1'], cluster_data['PCA2'], label=f'Cluster {cluster}', c=colors[cluster % len(colors)], alpha=0.6, edgecolors='w', s=50)
 
     if Gender == 'Men':
-        points_to_label = ['Eliud KIPCHOGE','Kelvin KIPTUM', 'Jakob INGEBRIGTSEN', 'Kenenisa BEKELE', 'Mehdi FRÈRE', 'Jimmy GRESSIER', 'Joshua CHEPTEGEI']
+        points_to_label = ['Eliud KIPCHOGE','Kelvin KIPTUM', 'Jakob INGEBRIGTSEN', 'Kenenisa BEKELE', 'Jimmy GRESSIER', 'Joshua CHEPTEGEI']
     else:
         points_to_label = ['Letesenbet GIDEY','Sifan HASSAN','Tigst ASSEFA','Faith KIPYEGON']
     for point in points_to_label:
@@ -110,7 +110,7 @@ def make_plot(best_performance,Gender):
 
     for cluster in clusters_to_label:
         cluster_data = best_performance[best_performance['Cluster'] == cluster]
-        sampled_points = cluster_data.sample(n=num_points_to_label, random_state=10)
+        sampled_points = cluster_data.sample(n=num_points_to_label, random_state=15)
         for __, row in sampled_points.iterrows():
             plt.scatter(row['PCA1'], row['PCA2'], c=colors[cluster % len(colors)], edgecolor='black', s=100, linewidth=1.5) 
             plt.text(row['PCA1'], row['PCA2'], row['Name'].split()[-1], fontsize=10, ha='right', weight = 'bold')
@@ -131,10 +131,8 @@ def make_plot(best_performance,Gender):
     output_path = os.path.join(output_dir, f'{Gender}_Athletes_clustering.png')
     plt.savefig(output_path, bbox_inches='tight', dpi=300)
 
-    plt.show()
 
-
-def final_function(Gender):
+def final_clustering(Gender):
     imputed_df,df = impute_missing_performances(Gender)
     best_performance, names = generate_best_performance(df,imputed_df)
     best_performance = clustering_pca(best_performance,names)

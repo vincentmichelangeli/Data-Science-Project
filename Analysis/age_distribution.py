@@ -5,6 +5,7 @@ from clustering import time_to_seconds
 import numpy as np
 
 races = ['1500 Metres', '5000 Metres', '10 Kilometres Road', '10,000 Metres','Half Marathon', 'Marathon']
+
 output_dir = 'Data/Figures'
 os.makedirs(output_dir, exist_ok=True)
 
@@ -39,21 +40,27 @@ def plot_distribution(Gender):
     plt.savefig(output_path, bbox_inches='tight', dpi=300)
 
 
-def calculate_time_differences(df, columns):
+def calculate_time_differences(df, columns, gender):
     """Calculate the differences for successive years for a given column"""
     diffs = {col: [] for col in columns}
-    races_duration = {'1500 Metres' : 210, 
+    races_duration = {'Men' :{'1500 Metres' : 210, 
                     '5000 Metres' : 780,
                     '10 Kilometres Road' : 29*60,
                     '10,000 Metres' : 29*60,
                     'Half Marathon' : 61*60,
-                    'Marathon' : 126*60}
+                    'Marathon' : 126*60},
+                    'Women' :{'1500 Metres' : 240, 
+                    '5000 Metres' : 860,
+                    '10 Kilometres Road' : 32*60,
+                    '10,000 Metres' : 32*60,
+                    'Half Marathon' : 67*60,
+                    'Marathon' : 139*60}}
     previous_values = {col: None for col in columns}
     
     for __, row in df.iterrows():
         for col in columns:
             if previous_values[col] is not None:
-                diffs[col].append((- row[col] + previous_values[col])/races_duration[col])
+                diffs[col].append((- row[col] + previous_values[col])/races_duration[gender][col])
             else:
                 diffs[col].append(np.nan)
             previous_values[col] = row[col]
@@ -88,16 +95,14 @@ def calculate_rolling_best_time(df, columns):
 
 def plot_progression(Gender):
     perf_by_age = create_age_performance_table(Gender)
-
+    r = races.copy()
     perf_by_age.sort_values(by=['Name', 'Year'], inplace=True)
-
     # Calculate the time differences between successive years for each athlete
     for col in races:
         perf_by_age[col] = perf_by_age[col].apply(time_to_seconds)
-    races.append('Name')
-    progress_by_age = perf_by_age[races].groupby('Name').apply(lambda x: calculate_rolling_best_time(x, races[:-1])).reset_index(level=0, drop=True)
-    print(perf_by_age)
-    progress_by_age = progress_by_age[races].groupby('Name').apply(lambda x: calculate_time_differences(x, races[:-1])).reset_index(level=0, drop=True)
+    r.append('Name')
+    progress_by_age = perf_by_age[r].groupby('Name').apply(lambda x: calculate_rolling_best_time(x, races)).reset_index(level=0, drop=True)
+    progress_by_age = progress_by_age[r].groupby('Name').apply(lambda x: calculate_time_differences(x, races,Gender)).reset_index(level=0, drop=True)
     progress_by_age['Age'] = perf_by_age['Age']
     progress_by_age = progress_by_age.drop(columns='Name')
 
@@ -106,7 +111,7 @@ def plot_progression(Gender):
     progress_by_age = progress_by_age[progress_by_age.index>20]
 
     plt.figure(figsize=(10,7))
-    for col in races[:-1]:
+    for col in races:
         plt.plot(progress_by_age[col], label = col)
     plt.legend()
     plt.xlabel('Age')
