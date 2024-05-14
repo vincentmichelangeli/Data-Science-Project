@@ -38,7 +38,9 @@ Preprocessing : Once you have downloaded the previous database, one way or anoth
 python Preprocessing/preprocessed_data_generation.py
 
 Analysis : To plot all the relevant data
-python Preprocessing/preprocessed_data_generation.py
+python Analysis/plot_generation.py
+
+In the report file you have the tex file you can run to generate the pdf that is in the same folder
 
 
 
