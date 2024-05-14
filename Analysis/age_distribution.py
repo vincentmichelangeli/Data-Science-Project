@@ -26,6 +26,8 @@ def create_age_performance_table(Gender):
 
 
 def plot_distribution(Gender):
+
+    """ gender : 'Men' | 'Women' saves the plot of the distribution of ages """
     perf_by_age = create_age_performance_table(Gender)
     perf_by_age = perf_by_age.groupby('Age').apply(lambda x: x.count())[races]
     perf_by_age = perf_by_age[perf_by_age.index>14]
@@ -40,8 +42,40 @@ def plot_distribution(Gender):
     plt.savefig(output_path, bbox_inches='tight', dpi=300)
 
 
+def calculate_rolling_best_time(df, columns):
+
+    """df is the df from the groupby('Name') function
+     and columns the names of the races wanted
+    
+    Calculate the rolling best time for a given column"""
+
+    best = {col: [] for col in columns}
+    
+    previous_values = {col: None for col in columns}
+    
+    for __, row in df.iterrows():
+        for col in columns:
+            if row[col] == 0:
+                row[col] = np.nan
+            if previous_values[col] is not None:
+                previous_values[col] = np.fmin(row[col],previous_values[col])
+                best[col].append(previous_values[col])
+                
+            else:
+                previous_values[col] = np.fmin(row[col],np.nan)
+                best[col].append(previous_values[col])
+                
+    for col in columns:
+        df[col] = best[col]
+    
+    return df
+
 def calculate_time_differences(df, columns, gender):
-    """Calculate the differences for successive years for a given column"""
+
+    """ gender : 'Men'|'Women', df is the df from the groupby('Name') function, and columns the names of the races wanted
+    Calculate the differences for successive years for a given column for each athlete"""
+
+
     diffs = {col: [] for col in columns}
     races_duration = {'Men' :{'1500 Metres' : 215, 
                     '5000 Metres' : 840,
@@ -70,46 +104,32 @@ def calculate_time_differences(df, columns, gender):
     
     return df
 
-def calculate_rolling_best_time(df, columns):
-    """Calculate the differences for successive years for a given column"""
-    best = {col: [] for col in columns}
-    
-    previous_values = {col: None for col in columns}
-    
-    for __, row in df.iterrows():
-        for col in columns:
-            if row[col] == 0:
-                row[col] = np.nan
-            if previous_values[col] is not None:
-                previous_values[col] = np.fmin(row[col],previous_values[col])
-                best[col].append(previous_values[col])
-                
-            else:
-                previous_values[col] = np.fmin(row[col],np.nan)
-                best[col].append(previous_values[col])
-                
-    for col in columns:
-        df[col] = best[col]
-    
-    return df
+
 
 def plot_progression(Gender):
+
+    """ Gender : 'Men'|'Women' uses all the functions above the create the prgression plot"""
     perf_by_age = create_age_performance_table(Gender)
     r = races.copy()
     perf_by_age.sort_values(by=['Name', 'Year'], inplace=True)
-    # Calculate the time differences between successive years for each athlete
+
+
     for col in races:
         perf_by_age[col] = perf_by_age[col].apply(time_to_seconds)
     r.append('Name')
+
+    ## get the rolling best time for each athlete
     progress_by_age = perf_by_age[r].groupby('Name').apply(lambda x: calculate_rolling_best_time(x, races)).reset_index(level=0, drop=True)
     progress_by_age = progress_by_age[r].groupby('Name').apply(lambda x: calculate_time_differences(x, races,Gender)).reset_index(level=0, drop=True)
     progress_by_age['Age'] = perf_by_age['Age']
     progress_by_age = progress_by_age.drop(columns='Name')
 
+    # Average the values and select the relevant ages 
     progress_by_age = progress_by_age.groupby('Age').mean()
     progress_by_age = progress_by_age[progress_by_age.index<35]
     progress_by_age = progress_by_age[progress_by_age.index>20]
 
+    #Plot the figure 
     plt.figure(figsize=(10,7))
     for col in races:
         plt.plot(progress_by_age[col], label = col)

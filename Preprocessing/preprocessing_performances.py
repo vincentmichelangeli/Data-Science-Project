@@ -6,9 +6,15 @@ import pandas as pd
 
 # Function to convert a time string to a timedelta object
 def parse_time_to_timedelta(time_str):
-    # Split the time string by delimiters ':' and '.'
+
+    """ Parsing the time_str : string to get timedelta objects
+    time_str follow a certain shape present in the scraped dataframe"""
+
+
+    # Split the time string 
     parts = re.split('[:.]', time_str)
-    parts = [int(re.sub(r'\D', '', part)) for part in parts]  # Convert all parts to integers
+    parts = [int(re.sub(r'\D', '', part)) for part in parts]
+
     if len(parts) == 2:  # Minutes and Seconds
         return timedelta(minutes=parts[0], seconds=parts[1])
     elif len(parts) == 3 and time_str.count(':') == 2:  # Hours, Minutes, Seconds
@@ -17,7 +23,7 @@ def parse_time_to_timedelta(time_str):
         return timedelta(minutes=parts[0], seconds=parts[1], milliseconds=parts[2]*10)
     return None
 
-# Function to identify and extract time from a string using regex
+# Function to extract time
 def extract_time(parts):
     combined_string = ' '.join(parts)
     time_pattern = re.compile(r'\b(\d{1,2}:\d{2}(?::\d{2})?(?:\.\d{1,2})?)\b')
@@ -26,8 +32,13 @@ def extract_time(parts):
         return parse_time_to_timedelta(match.group(0))
     return None
 
-# Function to parse the races string and extract the required data
+# Function to extract the required data
 def process_races(row):
+
+    """ Row is a row from the scraped dataframe, 
+    returns an array with a nicer shape to handle"""
+
+
     races = ast.literal_eval(row['Races'])
     records = []
     for race in races:
@@ -37,13 +48,19 @@ def process_races(row):
                 parts = performance.split()
                 year = parts[0]
                 time_delta = parse_time_to_timedelta(parts[1])
-                if time_delta:  # Ensure there is a valid time delta before appending
+                if time_delta:  
                     records.append([row['Name'], race_name, year, time_delta])
 
     return records
 
 
 def full_data_process(Gender):
+
+
+    """ Using all the function above for the table corresponding to 
+    Gender : 'Men'|'Women' table"""
+
+
     records = []
     df_perf = pd.read_csv(f'Data\Scraped_tables\{Gender}_performances.csv')
     df_perf.apply(lambda row: records.extend(process_races(row)), axis=1)

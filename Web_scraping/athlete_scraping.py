@@ -8,6 +8,9 @@ driver = webdriver.Chrome()
 data = []
 
 def get_table(gender, events, n_pages):
+    """n_pages :int Number of pages to go through (will be 4)
+    gender = 'Men'|'Women'
+    events = array of the names of the events we want the athletes to be from"""
     data = []
     for e in events:
         for i in range(1,n_pages):
@@ -21,15 +24,14 @@ def get_table(gender, events, n_pages):
 
             # Iterate over each button element
             for button in buttons:
-                # Find all <td> elements within each button
+                # Find all athletes url
                 athlete_url = "https://worldathletics.org" + button.get_attribute('data-athlete-url')
                 tds = button.find_elements(By.TAG_NAME,value='td')
 
-                # Get data from each <td>
                 single_data = [td.text for td in tds[1:4]]
                 single_data.append(athlete_url)
-                # Find the URL (assuming it's contained in an <a> tag within the first <td>)
                 data.append(tuple(single_data))
+
     data = list(set(data))
     data = [list(x) for x in data]
     return data
