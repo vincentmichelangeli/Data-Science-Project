@@ -134,11 +134,8 @@ def make_plot(best_performance,Gender):
     plt.show()
 
 
-
 def final_function(Gender):
     imputed_df,df = impute_missing_performances(Gender)
     best_performance, names = generate_best_performance(df,imputed_df)
     best_performance = clustering_pca(best_performance,names)
     make_plot(best_performance, Gender)
-
-final_function('Women')
