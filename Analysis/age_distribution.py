@@ -43,14 +43,14 @@ def plot_distribution(Gender):
 def calculate_time_differences(df, columns, gender):
     """Calculate the differences for successive years for a given column"""
     diffs = {col: [] for col in columns}
-    races_duration = {'Men' :{'1500 Metres' : 210, 
-                    '5000 Metres' : 780,
+    races_duration = {'Men' :{'1500 Metres' : 215, 
+                    '5000 Metres' : 840,
                     '10 Kilometres Road' : 29*60,
                     '10,000 Metres' : 29*60,
                     'Half Marathon' : 61*60,
                     'Marathon' : 126*60},
-                    'Women' :{'1500 Metres' : 240, 
-                    '5000 Metres' : 860,
+                    'Women' :{'1500 Metres' : 245, 
+                    '5000 Metres' : 900,
                     '10 Kilometres Road' : 32*60,
                     '10,000 Metres' : 32*60,
                     'Half Marathon' : 67*60,
